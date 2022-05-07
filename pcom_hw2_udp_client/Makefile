@@ -1,18 +1,33 @@
-# the compiler: gcc for C program, define as g++ for C++
-CC = gcc
+# Protocoale de comunicatii:
+# Laborator 8: Multiplexare
+# Makefile
 
-# compiler flags:
-#  -g    adds debugging information to the executable file
-#  -Wall turns on most, but not all, compiler warnings
-CFLAGS  = -g -Wall
+CFLAGS = -Wall -g
 
-# the build target executable:
-target = server subscriber
+# Portul pe care asculta serverul (de completat)
+PORT = 2000
+ID = "Lala"
 
-all: $(target)
+# Adresa IP a serverului (de completat)
+IP_SERVER = 127.0.0.1
 
-$(TARGET): $(TARGET).c
-	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).c
+all: server subscriber
+
+# Compileaza server.c
+server: server.cpp
+# Compileaza client.c
+subscriber: subscriber.cpp
+
+
+.PHONY: clean run_server run_subscriber
+
+# Ruleaza serverul
+run_server: server
+	./server ${PORT}
+
+# Ruleaza clientul
+run_subscriber: subscriber
+	./subscriber ${ID} ${IP_SERVER} ${PORT}
 
 clean:
-	$(RM) $(TARGET)
+	rm -f server client
