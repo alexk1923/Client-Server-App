@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon May  9 20:20:37 2022
+# Make data base, printed on Mon May  9 21:58:47 2022
 
 # Variables
 
@@ -177,7 +177,7 @@ VSCODE_EXTHOST_WILL_SEND_SOCKET = true
 # environment
 WSL_DISTRO_NAME = Ubuntu-20.04
 # variable set hash-table stats:
-# Load=83/1024=8%, Rehash=0, Collisions=6/112=5%
+# Load=83/1024=8%, Rehash=0, Collisions=6/108=6%
 
 # Pattern-specific Variable Values
 
@@ -185,9 +185,9 @@ WSL_DISTRO_NAME = Ubuntu-20.04
 
 # Directories
 
-# . (device 2080, inode 115219): 15 files, no impossibilities.
+# . (device 2080, inode 115219): 17 files, no impossibilities.
 
-# 15 files, no impossibilities in 1 directories.
+# 17 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -195,10 +195,11 @@ WSL_DISTRO_NAME = Ubuntu-20.04
 
 # Files
 
-subscriber:
+subscriber: subscriber.cpp protocols.cpp
 #  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Last modified 2022-05-09 21:57:07.711810356
+#  File has been updated.
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 21):
 	g++ $(CFLAGS) subscriber.cpp protocols.cpp -o subscriber
 
@@ -207,9 +208,7 @@ all: server subscriber
 #  Implicit rule search has been done.
 #  File does not exist.
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
+#  Successfully updated.
 
 .PHONY: clean run_server run_subscriber
 #  Implicit rule search has not been done.
@@ -217,42 +216,17 @@ all: server subscriber
 #  File has not been updated.
 
 # Not a target:
-.SUFFIXES:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-
-# Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-09 20:20:05.701818704
+#  Last modified 2022-05-09 21:57:20.961810337
 #  File has been updated.
 #  Successfully updated.
 
-server:
+server: server.cpp protocols.cpp
 #  Implicit rule search has not been done.
-#  Implicit/static pattern stem: ''
-#  File does not exist.
+#  Last modified 2022-05-09 21:57:06.681810358
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := server
-# automatic
-# % := 
-# automatic
-# * := 
-# automatic
-# + := 
-# automatic
-# | := 
-# automatic
-# < := 
-# automatic
-# ^ := 
-# automatic
-# ? := 
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 18):
 	g++ $(CFLAGS) server.cpp protocols.cpp -o server
 
@@ -265,6 +239,13 @@ run_subscriber: subscriber
 	./subscriber ${ID} ${IP_SERVER} ${PORT}
 
 # Not a target:
+protocols.cpp:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-09 21:54:19.781810597
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
 .DEFAULT:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -274,10 +255,16 @@ run_server: server
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
- 
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 27):
 	./server ${PORT}
+
+# Not a target:
+subscriber.cpp:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-09 20:59:10.961815341
+#  File has been updated.
+#  Successfully updated.
 
 clean:
 #  Phony target (prerequisite of .PHONY).
@@ -287,8 +274,16 @@ clean:
 #  recipe to execute (from 'Makefile', line 34):
 	rm -f server subscriber
 
+ 
+# Not a target:
+server.cpp:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-09 21:56:50.741810381
+#  File has been updated.
+#  Successfully updated.
+
 # files hash-table stats:
-# Load=10/1024=1%, Rehash=0, Collisions=0/34=0%
+# Load=13/1024=1%, Rehash=0, Collisions=0/40=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
@@ -298,9 +293,9 @@ clean:
 # strcache buffers: 1 (0) / strings = 26 / storage = 303 B / avg = 11 B
 # current buf: size = 8162 B / used = 303 B / count = 26 / avg = 11 B
 
-# strcache performance: lookups = 46 / hit rate = 43%
+# strcache performance: lookups = 51 / hit rate = 49%
 # hash-table stats:
-# Load=26/8192=0%, Rehash=0, Collisions=1/46=2%
-# Finished Make data base on Mon May  9 20:20:37 2022
+# Load=26/8192=0%, Rehash=0, Collisions=1/51=2%
+# Finished Make data base on Mon May  9 21:58:47 2022
 
  

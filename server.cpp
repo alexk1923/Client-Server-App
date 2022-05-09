@@ -1,6 +1,7 @@
 #include <iostream>
 #include<vector>
 using namespace std;
+#include <bits/stdc++.h>
 #include <unordered_map>
 #include <stdio.h>
 #include <string.h>
@@ -131,9 +132,18 @@ void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
 }
 
 
-
-
 bool hasKey(unordered_map<string, int> map, string key) {
+    if(map.count(key) == 0) {
+        return false;
+    }
+    return true;
+}
+
+bool hasKey(unordered_map<string, queue<message_udp>> map, string key) {
+    if(map.size() == 0) {
+        return false;
+    }
+
     if(map.count(key) == 0) {
         return false;
     }
@@ -208,7 +218,8 @@ int main(int argc, char *argv[])
 
         client_tcp clients[1000];
         int clients_dim = 0;
-    
+        unordered_map<string, queue<message_udp>> inactive_list;
+        
     bool running = true;
     while(running) {
 
@@ -251,7 +262,7 @@ int main(int argc, char *argv[])
                     bool valid_new_client = true;
                     for(int j = 0; j < clients_dim; j++) {
                         if(strcmp(clients[j].id, buffer) == 0) {
-                            if(clients[j].active == true) {
+                            if(clients[j].active) {
                                 printf("Client %s already connected.\n", clients[j].id);
                                 valid_new_client = false;
                                 memset(buffer, 0, BUFLEN);
@@ -277,6 +288,19 @@ int main(int argc, char *argv[])
                             clients[j].active = true;
                             printf("New client %s connected from %s : %d\n",
 					        buffer, inet_ntoa(cliaddr.sin_addr), ntohs(cliaddr.sin_port));
+                            
+                            // printf("------------------------------------------------");
+                            // print_inactive_list(inactive_list);
+                            // printf("-----------------------------------------------");
+                            if(hasKey(inactive_list, clients[j].id)) {
+                                while(!inactive_list.at(clients[j].id).empty()) {
+                                    message_udp curr_msg = inactive_list.at(clients[j].id).front();
+                                    // printf("Voi trimite mesajul:\n");
+                                    // print_udp_msg(curr_msg);
+                                    inactive_list.at(clients[j].id).pop();
+                                    send(clients[j].socket, &curr_msg, 1600, 0);
+                                }   
+                            }
                             break;
                         }
                     }
@@ -299,8 +323,6 @@ int main(int argc, char *argv[])
                     // a venit o cerere de conexiune pe socketul inactiv (cel cu listen),
 					// pe care serverul o accepta
                     
-
-
                     memset(buffer, 0, sizeof(buffer));
                     memset(&cliaddr, 0, sizeof(cliaddr));
                     n = recvfrom(sockfd_UDP, (char *)buffer, BUFLEN,  
@@ -335,17 +357,33 @@ int main(int argc, char *argv[])
                     for(int j = 0; j < clients_dim; j++) {
                         if(hasKey(clients[j].topics, new_msg.topic)) { // daca e abonat
                             // print_udp_msg(new_msg);
-                        int yes = 1;
-                        int result = setsockopt(clients[j].socket,
-                                    IPPROTO_TCP,
-                                    TCP_NODELAY,
-                                    (char *) &yes, 
-                                    sizeof(int));    // 1 - on, 0 - off
-                        
-                            send(clients[j].socket, &new_msg, 1600, 0);
+                            int yes = 1;
+                            int result = setsockopt(clients[j].socket,
+                                        IPPROTO_TCP,
+                                        TCP_NODELAY,
+                                        (char *) &yes, 
+                                        sizeof(int));    // 1 - on, 0 - off
+                            
+                            if(clients[j].active) {
+                                send(clients[j].socket, &new_msg, 1600, 0);
+                            } else {
+                                if(hasKey(inactive_list, clients[j].id)) {
+                                     if(clients[j].topics.at(new_msg.topic) == 1) {
+                                        // printf("------------------------------------------------");
+                                        // print_inactive_list(inactive_list);
+                                        // printf("-----------------------------------------------");
+                                         inactive_list.at(clients[j].id).push(new_msg);
+                                     }
+                                } else {
+                                    if(clients[j].topics.at(new_msg.topic) == 1) {
+                                        queue<message_udp> new_queue;
+                                        new_queue.push(new_msg);
+                                        inactive_list.insert(make_pair(clients[j].id, new_queue));
+                                    }
+                                }
+                            }
                         }
                     }
-
 
                 } else if (i == STDIN_FILENO) {
                     	memset(buffer, 0, sizeof(buffer));
@@ -357,10 +395,12 @@ int main(int argc, char *argv[])
                             // TODO: Inchide toate conexiunile active
                             printf("Se inchide serverul si toate conexiunile active de TCP\n");
                             for(int j = 0; j < clients_dim; j++) {
-                                memset(buffer, 0, BUFLEN);
-                                strcpy(buffer, "close");
-                                int res = send(clients[j].socket, buffer, strlen(buffer), 0);
-                                DIE(res < 0, "res");
+                                if(clients[j].active) {
+                                    memset(buffer, 0, BUFLEN);
+                                    strcpy(buffer, "close");
+                                    int res = send(clients[j].socket, buffer, strlen(buffer), 0);
+                                    DIE(res < 0, "res");
+                                }
                                 close(clients[j].socket);
                                 FD_CLR(clients[j].socket, &read_fds);
                             }
@@ -387,7 +427,7 @@ int main(int argc, char *argv[])
                         for(int j = 0; j < clients_dim; j++) {
                             if(clients[j].socket == i) {
                                 printf("Client %s disconnected.\n", clients[j].id);
-                                clients[j].active = false;
+                                clients[j].active = false;  
                             }
                         }
                         

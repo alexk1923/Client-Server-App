@@ -14,10 +14,10 @@ IP_SERVER = 127.0.0.1
 all: server subscriber
 
 # Compileaza server.c
-server: 
+server: server.cpp protocols.cpp
 	g++ $(CFLAGS) server.cpp protocols.cpp -o server
 # Compileaza client.c
-subscriber: 
+subscriber: subscriber.cpp protocols.cpp
 	g++ $(CFLAGS) subscriber.cpp protocols.cpp -o subscriber
 
 .PHONY: clean run_server run_subscriber

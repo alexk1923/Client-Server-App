@@ -1,3 +1,4 @@
+
 #include "protocols.h"
 
 
@@ -30,6 +31,26 @@ void print_clients(client_tcp clients[], int client_dim) {
             cout << "[" << (p.first) << ", "
                     << (p.second) << "]\n";
         }
+    }
+}
+
+
+void printQueue(queue<message_udp> q)
+{
+	//printing content of queue 
+	while (!q.empty()){
+		print_udp_msg(q.front());
+		q.pop();
+	}
+	cout<<endl;
+}
+
+void print_inactive_list(unordered_map<string, queue<message_udp>> map) {
+    for (auto p : map) {
+        printf("[ Client: %s, ", p.first.c_str());
+        // queue<message_udp> curr_q = p.second;
+        printQueue(p.second);
+        printf("]\n");
     }
 }
 

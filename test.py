@@ -431,7 +431,7 @@ def run_test_c1_restart(server):
 def run_test_data_no_clients(c1):
   """Tests that subscriber C1 doesn't receive anything from the server upon restart."""
   fail_test("data_no_clients")
-
+  print(c1.get_output_timeout(1))
   if c1.get_output_timeout(1) == "timeout":
     pass_test("data_no_clients")
 
