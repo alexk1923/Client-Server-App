@@ -570,7 +570,6 @@ def run_test_c2_restart_sf(server, topics):
 def run_test_quick_flow(c1, topics):
   """Tests that subscriber C1 receives many messages in quick succession on subscribed topics."""
   fail_test("quick_flow")
-  return
 
   rmem = get_procfs_values(True)
   wmem = get_procfs_values(False)
@@ -594,6 +593,7 @@ def run_test_quick_flow(c1, topics):
   success = True
   for i in range(30):
     for topic in topics:
+      print(topic.print())
       success = check_subscriber_output(c1, "1", topic.print()) and success
 
   if success:

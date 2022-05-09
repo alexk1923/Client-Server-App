@@ -316,6 +316,13 @@ int main(int argc, char *argv[])
                         clients[clients_dim++] = new_client;
                         printf("New client %s connected from %s : %d\n",
 					        buffer, inet_ntoa(cliaddr.sin_addr), ntohs(cliaddr.sin_port));
+
+                        int yes = 1;
+                        int result = setsockopt(new_client.socket,
+                                        IPPROTO_TCP,
+                                        TCP_NODELAY,
+                                        (char *) &yes, 
+                                        sizeof(int));    // 1 - on, 0 - off
                         // printf("Bufferul primit este: %s", buffer);
                     }
                     					
@@ -357,12 +364,7 @@ int main(int argc, char *argv[])
                     for(int j = 0; j < clients_dim; j++) {
                         if(hasKey(clients[j].topics, new_msg.topic)) { // daca e abonat
                             // print_udp_msg(new_msg);
-                            int yes = 1;
-                            int result = setsockopt(clients[j].socket,
-                                        IPPROTO_TCP,
-                                        TCP_NODELAY,
-                                        (char *) &yes, 
-                                        sizeof(int));    // 1 - on, 0 - off
+   
                             
                             if(clients[j].active) {
                                 send(clients[j].socket, &new_msg, 1600, 0);

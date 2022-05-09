@@ -44,13 +44,7 @@ int main(int argc, char *argv[])
 	serv_addr.sin_port = htons(atoi(argv[3]));
 	ret = inet_aton(argv[2], &serv_addr.sin_addr);
 	DIE(ret == 0, "inet_aton");
-
-	 int yes = 1;
-	int result = setsockopt(sockfd,
-			IPPROTO_TCP,
-			TCP_NODELAY,
-			(char *) &yes, 
-			sizeof(int));    // 1 - on, 0 - off
+    // 1 - on, 0 - off
 
 	ret = connect(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr));
 	DIE(ret < 0, "connect");
