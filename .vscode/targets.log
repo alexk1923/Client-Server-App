@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun May  8 13:40:27 2022
+# Make data base, printed on Mon May  9 20:20:37 2022
 
 # Variables
 
@@ -31,7 +31,7 @@ NVM_INC = /home/alexkullman/.nvm/versions/node/v16.5.0/include/node
 # automatic
 @F = $(notdir $@)
 # makefile
-CURDIR := /home/alexkullman/PCom/tema2/homework2-public-main/pcom_hw2_udp_client
+CURDIR := /home/alexkullman/PCom/tema2/homework2-public-main
 # makefile
 SHELL = /bin/sh
 # environment
@@ -63,7 +63,7 @@ NVM_BIN = /home/alexkullman/.nvm/versions/node/v16.5.0/bin
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-b6646147-392d-452e-a1e4-dbd7c282b7f3.sock
+VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-b55f4ee9-112c-4f2d-9809-d80fc3312e14.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -75,7 +75,7 @@ DISPLAY = :0
 # environment
 VSCODE_PIPE_LOGGING = true
 # environment
-PWD = /home/alexkullman/PCom/tema2/homework2-public-main/pcom_hw2_udp_client
+PWD = /home/alexkullman/PCom/tema2/homework2-public-main
 # default
 .LOADED := 
 # environment
@@ -83,7 +83,7 @@ WSL_INTEROP = /run/WSL/8_interop
 # environment
 PULSE_SERVER = /mnt/wslg/PulseServer
 # environment
-WT_SESSION = 074b0de3-f12f-4906-844b-9191d549207f
+WT_SESSION = 56c45235-0d26-4ae7-b9d9-181adeb0b6e1
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
@@ -177,7 +177,7 @@ VSCODE_EXTHOST_WILL_SEND_SOCKET = true
 # environment
 WSL_DISTRO_NAME = Ubuntu-20.04
 # variable set hash-table stats:
-# Load=83/1024=8%, Rehash=0, Collisions=6/108=6%
+# Load=83/1024=8%, Rehash=0, Collisions=6/112=5%
 
 # Pattern-specific Variable Values
 
@@ -185,10 +185,9 @@ WSL_DISTRO_NAME = Ubuntu-20.04
 
 # Directories
 
-# . (device 2080, inode 115534): 18 files, no impossibilities.
+# . (device 2080, inode 115219): 15 files, no impossibilities.
 
-# 18 files, no impossibilities in 1 directories.
- 
+# 15 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -196,18 +195,21 @@ WSL_DISTRO_NAME = Ubuntu-20.04
 
 # Files
 
-subscriber: subscriber.cpp protocols.cpp
-#  Implicit rule search has been done.
-#  Last modified 2022-05-08 02:15:16.686872594
-#  File has been updated.
-#  Successfully updated.
+subscriber:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 21):
+	g++ $(CFLAGS) subscriber.cpp protocols.cpp -o subscriber
 
 all: server subscriber
 #  Command line target.
 #  Implicit rule search has been done.
 #  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
 
 .PHONY: clean run_server run_subscriber
 #  Implicit rule search has not been done.
@@ -215,32 +217,52 @@ all: server subscriber
 #  File has not been updated.
 
 # Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-07 22:51:44.776910462
+#  Last modified 2022-05-09 20:20:05.701818704
 #  File has been updated.
 #  Successfully updated.
 
-server: server.cpp protocols.cpp
-#  Implicit rule search has been done.
-#  Last modified 2022-05-08 02:13:03.076873009
+server:
+#  Implicit rule search has not been done.
+#  Implicit/static pattern stem: ''
+#  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := server
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := 
+# automatic
+# | := 
+# automatic
+# < := 
+# automatic
+# ^ := 
+# automatic
+# ? := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
+#  recipe to execute (from 'Makefile', line 18):
+	g++ $(CFLAGS) server.cpp protocols.cpp -o server
 
 run_subscriber: subscriber
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 30):
+#  recipe to execute (from 'Makefile', line 31):
 	./subscriber ${ID} ${IP_SERVER} ${PORT}
-
-# Not a target:
-protocols.cpp:
-#  Implicit rule search has been done.
-#  Last modified 2022-05-07 22:33:02.106913943
-#  File has been updated.
-#  Successfully updated.
 
 # Not a target:
 .DEFAULT:
@@ -252,46 +274,33 @@ run_server: server
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
+ 
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 26):
+#  recipe to execute (from 'Makefile', line 27):
 	./server ${PORT}
-
-# Not a target:
-subscriber.cpp:
-#  Implicit rule search has been done.
-#  Last modified 2022-05-08 02:14:58.186872652
-#  File has been updated.
-#  Successfully updated.
 
 clean:
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 33):
+#  recipe to execute (from 'Makefile', line 34):
 	rm -f server subscriber
 
-# Not a target:
-server.cpp:
-#  Implicit rule search has been done.
-#  Last modified 2022-05-08 02:12:40.596873078
-#  File has been updated.
-#  Successfully updated.
-
 # files hash-table stats:
-# Load=13/1024=1%, Rehash=0, Collisions=0/40=0%
+# Load=10/1024=1%, Rehash=0, Collisions=0/34=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 27 / storage = 302 B / avg = 11 B
-# current buf: size = 8162 B / used = 302 B / count = 27 / avg = 11 B
+# strcache buffers: 1 (0) / strings = 26 / storage = 303 B / avg = 11 B
+# current buf: size = 8162 B / used = 303 B / count = 26 / avg = 11 B
 
-# strcache performance: lookups = 52 / hit rate = 48%
+# strcache performance: lookups = 46 / hit rate = 43%
 # hash-table stats:
-# Load=27/8192=0%, Rehash=0, Collisions=1/52=2%
-# Finished Make data base on Sun May  8 13:40:27 2022
+# Load=26/8192=0%, Rehash=0, Collisions=1/46=2%
+# Finished Make data base on Mon May  9 20:20:37 2022
 
  

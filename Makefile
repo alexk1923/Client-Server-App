@@ -5,7 +5,7 @@
 CFLAGS = -Wall -g
 
 # Portul pe care asculta serverul (de completat)
-PORT = 2000
+PORT = 1500
 ID = "Lala"
 
 # Adresa IP a serverului (de completat)
@@ -14,10 +14,11 @@ IP_SERVER = 127.0.0.1
 all: server subscriber
 
 # Compileaza server.c
-server: server.cpp
+server: 
+	g++ $(CFLAGS) server.cpp protocols.cpp -o server
 # Compileaza client.c
-subscriber: subscriber.cpp
-
+subscriber: 
+	g++ $(CFLAGS) subscriber.cpp protocols.cpp -o subscriber
 
 .PHONY: clean run_server run_subscriber
 
@@ -30,4 +31,4 @@ run_subscriber: subscriber
 	./subscriber ${ID} ${IP_SERVER} ${PORT}
 
 clean:
-	rm -f server client
+	rm -f server subscriber

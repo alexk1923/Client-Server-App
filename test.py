@@ -279,6 +279,7 @@ def start_and_check_client(server, id, restart=False, test=True):
 
   if not outs.startswith("New client C" + id + " connected from"):
     print("Error: server did not print that C" + id + " is connected")
+    print(outs)
     success = False
   
   if success and test:
@@ -306,6 +307,7 @@ def check_subscriber_stop(server, c, id):
   message = "Client C" + id + " disconnected."
   if outs.rstrip() != message or c.is_alive():
     print("Error: client C" + id + " not disconnected")
+    print("Output: " + outs.rstrip())
     return False
 
   return True
@@ -421,6 +423,7 @@ def run_test_c1_restart(server):
   # generate one message for each topic
   print("Generating one message for each topic")
   run_udp_client()
+  sleep(1)
 
   # restart and check subscriber C1
   return start_and_check_client(server, "1", True)
@@ -450,6 +453,7 @@ def run_test_same_id(server):
 
   if not outs.startswith("Client C1 already connected."):
     print("Error: server did not print that C1 is already connected")
+    print(outs)
     success = False
 
   if success:
@@ -566,6 +570,7 @@ def run_test_c2_restart_sf(server, topics):
 def run_test_quick_flow(c1, topics):
   """Tests that subscriber C1 receives many messages in quick succession on subscribed topics."""
   fail_test("quick_flow")
+  return
 
   rmem = get_procfs_values(True)
   wmem = get_procfs_values(False)
