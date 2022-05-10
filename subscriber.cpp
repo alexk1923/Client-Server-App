@@ -19,7 +19,6 @@ void usage(char *file)
 }
 
 
-
 int main(int argc, char *argv[])
 {
 	setvbuf(stdout, NULL, _IONBF, BUFSIZ);
@@ -33,23 +32,31 @@ int main(int argc, char *argv[])
 
 	buffer[0] = *(char *) argv[1];
 
-    // setare socket
+    // set socket
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	DIE(sockfd < 0, "socket");
 
-      // handle the error
 
-    // setare campuri server
+    // set server info
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(atoi(argv[3]));
 	ret = inet_aton(argv[2], &serv_addr.sin_addr);
 	DIE(ret == 0, "inet_aton");
-    // 1 - on, 0 - off
 
+
+	// connect with server
 	ret = connect(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr));
 	DIE(ret < 0, "connect");
 
-
+	// deactivate Nagle
+	int yes = 1;
+	int result = setsockopt(sockfd,
+				IPPROTO_TCP,
+				TCP_NODELAY,
+				(char *) &yes, 
+				sizeof(int));    // 1 - on, 0 - off
+	DIE(result < 0, "Nagle");
+	// send client ID to the server
 	strncpy(buffer, argv[1], strlen(argv[1]) + 1);
 	n = send(sockfd, buffer, strlen(buffer), 0);
 	DIE(n < 0, "send");
@@ -66,34 +73,33 @@ int main(int argc, char *argv[])
 		ret = select(sockfd + 1, &read_fds, NULL, NULL, NULL);
 		DIE(ret < 0, "select");
     
-  		// se citeste de la stdin
-
+  		// read from user input
 		if(FD_ISSET(STDIN_FILENO, &read_fds)) {
 			memset(buffer, 0, sizeof(buffer));
 		
 			n = read(0, buffer, sizeof(buffer) - 1);
 			DIE(n < 0, "read");
 
+			if (strncmp(buffer, "exit", 4) == 0) {
+				break;
+			}
+
 			char *token;
 
 				int no_arg = 0;
 				token = strtok(buffer, " ");
-				// printf("token =%s|\n", token);
 
 				char subscription_info[52];
 				memset(subscription_info, 0, sizeof(subscription_info));
 				int sf;
 				if(strcmp(token, "subscribe") == 0) {
-					// printf("Subscribed to topic.\n");
 					while(token) {
 						no_arg++;
 						token = strtok(NULL, " ");		
 						if(no_arg == 1) {
-							// printf("topic = %s\n", token);
 							strncpy(subscription_info, token, strlen(token) + 1);
 						} else if(no_arg == 2) {
-							// printf("sf = %s", token);
-							sf = atoi(token);   
+							sf = atoi(token);
 						}	
 					}
 
@@ -102,76 +108,56 @@ int main(int argc, char *argv[])
 						continue;																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																														
 					}
 
-					// se trimite mesaj la server
-
-					// char subscription_info[52];
-					// strncpy(subscription_info, topic_subscribed, strlen(topic_subscribed) + 1);
 					int info_len = strlen(subscription_info);
 					if(sf == 0) {
-						strncpy(&subscription_info[info_len], "0", 1);
-						// subscription_info[strlen(subscription_info)] = '0';
+						subscription_info[info_len] = '0';
 					} else {
-						strncpy(&subscription_info[info_len], "1", 1);
-						// subscription_info[strlen(subscription_info)] = '1';
+						subscription_info[info_len] = '1';
 					}
-					strncpy(&subscription_info[info_len + 1], "S", 1);
+					subscription_info[info_len + 1] = 'S';
 					subscription_info[info_len + 2] = '\0';
-
 					
-					int yes = 1;
-					int result = setsockopt(sockfd,
-								IPPROTO_TCP,
-								TCP_NODELAY,
-								(char *) &yes, 
-								sizeof(int));    // 1 - on, 0 - off
+					
 					n = send(sockfd, subscription_info, strlen(subscription_info), 0);
 					DIE(n < 0, "send");	
 
 					printf("Subscribed to topic.\n");
+				} else if(strcmp(token, "unsubscribe") == 0) {
+					token = strtok(NULL, " ");
+					strncpy(subscription_info, token, strlen(token) + 1);
+					int info_len = strlen(subscription_info);
+					subscription_info[info_len] = 'U';
+					subscription_info[info_len + 1] = '\0';
+
+					n = send(sockfd, subscription_info, strlen(subscription_info), 0);
+					DIE(n < 0, "send");
+				} else {
+					printf("Invalid command. Commands helper:\nExit - disconnect from server\n Subscribe <topic> <sf>\nUnsubscribe <topic>\n");
 				}
 
 
 		} else if(FD_ISSET(sockfd, &read_fds)) {
+			// message from server
 			memset(buffer, 0, sizeof(buffer));
 			int m = recv(sockfd, buffer, read_size, 0);
 			DIE(m < 0, "recv");
-
 
 			if(strcmp(buffer, "close") == 0) {
 				break;
 			}
 
+			// modify incoming read size
 			if(read_size == 10) {
 				int next_dim = atoi(buffer);
-				// printf("rd size = 10, buff: %s\n", buffer);
-				// printf("next_dim = %d\n", next_dim);
 				read_size = next_dim;
-				// n = send(sockfd, "OK", strlen("OK"), 0);
-				// DIE(n < 0, "send");	
 				continue;
 			}
-			// printf("buff:\n");
-			// for (int i = 0; i < 60; i++) {
-			// 	printf("%c ", buffer[i]);
-			// }
-			// printf("\n");
 
-			
-			// printf("buff: %s\n", buffer);
-
-			if(m != 0) {
-				// message_udp *new_msg = (message_udp *)buffer; 
-				// printf("m = %d\n", m);   
+			if(m != 0) { 
 				printf("%s\n", buffer);
+				// reset read size to default
 				read_size = 10;
-				// print_udp_msg(*new_msg);
-				// printf("%s\n", buffer);
 			}
-		}
-		
-		// printf("lala");
-		if (strncmp(buffer, "exit", 4) == 0) {
-			break;
 		}
 	}
 

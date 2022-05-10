@@ -36,32 +36,16 @@ int countDigits(int x) {
 
 void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
 {
-        int i = 0;
-        while(buffer[i] != '\0' && i < 50) {
-            i++;
-        }
+
         new_msg->topic = buffer;
-        // new_msg->topic.copy(buffer, i, 0);
-        
-        // strncpy(new_msg->topic, buffer, i);
-        // (new_msg->topic)[i] = '\0';
-        // printf("Topic: %s", topic);
-        i = 50;
 
-        // type = buffer[i];
-        // printf("type:%d", (int)type);
+        int i = 50;
 
-        int data_type = (int)buffer[i];     
-        // printf("Tip de date: 0x%d ", data_type);
+        int data_type = (int)buffer[i];
 
         if(data_type == 0) {
-            // printf("\n---------INT!---------\n");
             new_msg->data_type = "INT";
-            // string tmp("INT", sizeof("INT"));
-            // strncpy(new_msg->data_type, "INT", 3);
-            // new_msg->data_type[3] = '\0';
             int sign_byte = (int)buffer[++i]; // i = 51
-            // printf("Octet de semn %d\n", sign_byte);
 
             int payload_val = ntohl(*(uint32_t *) (buffer + (++i))); // i = 52
             if(sign_byte == 1) {
@@ -70,34 +54,19 @@ void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
             char temp[50];
             snprintf(temp, 50, "%d", payload_val);
             new_msg->payload = temp;
-            new_msg->payload.shrink_to_fit();
-            // new_msg->payload[strlen(new_msg->payload)] = '\0';
-            // printf("uint32_t in network: %d\n",  payload_val);
         } else if (data_type == 1) {
             new_msg->data_type = "SHORT_REAL";
-            // strncpy(new_msg->data_type, "SHORT_REAL", 10);
-            // new_msg->data_type[10] = '\0';
 
-
-            // printf("\n---------SHORT REAL!---------\n");
             float payload_val = ntohs(* (uint16_t *) (buffer + (++i))) / 100.0; // i = 51
             char temp[100];
             snprintf(temp, 100, "%.2f", payload_val);
-            // new_msg->payload[strlen(new_msg->payload)] = '\0';
 
             new_msg->payload = temp;
-            // printf("Number = %.2f\n", payload_val);
         } else if (data_type == 2) {
-            // printf("\n---------FLOAT!---------\n");
-            // tmp.replace(tmp.begin(), tmp.end(), "FLOAT", sizeof("FLOAT"));
+
             new_msg->data_type = "FLOAT";
-            // strncpy(new_msg->data_type, "FLOAT", 5);
-            // new_msg->data_type[5] = '\0';
-
-
 
             int sign_byte = (int)(buffer[++i]); // i = 51
-            // printf("Octet de semn %d\n", sign_byte);
 
             int payload_val = ntohl(*(uint32_t *) (buffer + (++i))); // i = 52
 
@@ -109,34 +78,20 @@ void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
                 ten_pow *= 10;
                 pow_cpy--;
             }
-            // printf("tenpow:%d", ten_pow);
             double payload_float_val = payload_val / (ten_pow * 1.0);
 
             if(sign_byte == 1) {
                 payload_float_val *= (-1);
             }
             
-
-            // printf("payload float val: %d", (int)payload_float_val);
-            // char aux_float[10];
-            // sprintf(aux_float, "%d", (int)payload_float_val);
             char temp[100];
             snprintf(temp, 100, "%1.10g", payload_float_val);
-            // new_msg->payload[strlen(new_msg->payload)] = '\0';
             new_msg->payload = temp;
-            // printf("float_number:%f\n", payload_float_val);
 
         } else if(data_type == 3) {
             new_msg->data_type = "STRING";
-            // strncpy(new_msg->data_type, "STRING", 6);
-            // new_msg->data_type[6] = '\0';
-            // printf("\n---------STRING!---------\n");
             char* payload_val = (char *) (buffer + 51);
             new_msg->payload = payload_val;
-            // strncpy(new_msg->payload, payload_val, strlen(payload_val));
-            // printf("strlen payload string: %ld", strlen(payload_val));
-            // new_msg->payload[strlen(payload_val)] = '\0';
-            // printf("payload string:%s\n", payload_val);
         } else {
             printf("\n-----------INVALID !!!!!!!-------\n");
         }
@@ -161,86 +116,106 @@ bool hasKey(unordered_map<string, queue<message_udp>> map, string key) {
     return true;
 }
 
+void disconnect_client(int sockfd) {
+    char buffer[6];
+    
+    memset(buffer, 0, 6);
+    strcpy(buffer, "close");
+    int res = send(sockfd, buffer, strlen(buffer) + 1, 0);
+    DIE(res < 0, "res");
+    close(sockfd);
+}
+
+void send_UDP_client(message_udp curr_msg, int socket) {
+    string tot = curr_msg.ip_udp + ":" + curr_msg.port_udp + " - " + curr_msg.topic + " - "
+                + curr_msg.data_type + " - " + curr_msg.payload;
+
+    char dim[10];
+    memset(dim, 0, 10);
+    sprintf(dim, "%ld", tot.size());
+    dim[10] = '\0'; 
+    send(socket, dim, 10, 0);
+
+    char *msg_char = (char *)malloc((tot.size() + 1) * sizeof(char));
+    tot.copy(msg_char, tot.size());
+    msg_char[tot.size()] ='\0';
+
+    send(socket, msg_char, tot.size(), 0);
+    free(msg_char);
+}
+
 int main(int argc, char *argv[]) 
 { 
   
-    setvbuf(stdout, NULL, _IONBF, BUFSIZ);
-    int sockfd_UDP; 
+    setvbuf(stdout, NULL, _IONBF, BUFSIZ); 
     char buffer[BUFLEN]; 
-    // char *hello = "Hello from server"; 
     struct sockaddr_in servaddr, cliaddr; 
 
-        // Creating socket file descriptor 
-        if ( (sockfd_UDP = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
-            perror("socket creation failed"); 
-            exit(EXIT_FAILURE); 
-        } 
-            
-         
-        memset(&cliaddr, 0, sizeof(cliaddr)); 
 
-        // setare port
-        int portno = atoi(argv[1]);
-        DIE(portno == 0, "atoi");
-            
-        // Informatii despre server
-        memset(&servaddr, 0, sizeof(servaddr));
-        servaddr.sin_family   = AF_INET; // IPv4 
-        servaddr.sin_addr.s_addr = INADDR_ANY; 
-        servaddr.sin_port = htons(portno); 
-            
-        // Bind the socket with the server address 
-        int ret = bind(sockfd_UDP, (struct sockaddr *) &servaddr, sizeof(struct sockaddr));
-	    DIE(ret < 0, "bind");
-            
-        socklen_t len;
-        int n; 
+    // set port
+    int portno = atoi(argv[1]);
+    DIE(portno == 0, "atoi");
         
-        len = sizeof(cliaddr);  //len is value/result 
-
-        socklen_t clilen;
-
-        fd_set read_fds;	// multimea de citire folosita in select()
-        fd_set tmp_fds;		// multime folosita temporar
-        int fdmax;			// valoare maxima fd din multimea read_fds
-
-        // se goleste multimea de descriptori de citire (read_fds) si multimea temporara (tmp_fds)
-        FD_ZERO(&read_fds);
-        FD_ZERO(&tmp_fds);
-
-        int sockfd_TCP, newsockfd;
-        sockfd_TCP = socket(AF_INET, SOCK_STREAM, 0);
-	    DIE(sockfd_TCP < 0, "socket");
-    
-
-        ret = bind(sockfd_TCP, (struct sockaddr *) &servaddr, sizeof(struct sockaddr));
-        DIE(ret < 0, "bind");
-
-        ret = listen(sockfd_TCP, MAX_CLIENTS);
-        DIE(ret < 0, "listen");
+    // set server info
+    memset(&servaddr, 0, sizeof(servaddr));
+    servaddr.sin_family   = AF_INET; // IPv4 
+    servaddr.sin_addr.s_addr = INADDR_ANY; 
+    servaddr.sin_port = htons(portno); 
 
 
-        // se adauga noul file descriptor (socketul pe care se asculta conexiuni) in multimea read_fds
-        FD_SET(sockfd_TCP, &read_fds);
-        FD_SET(sockfd_UDP, &read_fds);
-        FD_SET(STDIN_FILENO, &read_fds);
-        fdmax = sockfd_TCP;
+    int sockfd_UDP;
+    // UDP file descriptor
+    if ( (sockfd_UDP = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
+        perror("socket creation failed"); 
+        exit(EXIT_FAILURE); 
+    } 
+        
+    memset(&cliaddr, 0, sizeof(cliaddr)); 
 
-        client_tcp clients[1000];
-        int clients_dim = 0;
-        unordered_map<string, queue<message_udp>> inactive_list;
+        
+    // Bind the socket with the server address 
+    int ret = bind(sockfd_UDP, (struct sockaddr *) &servaddr, sizeof(struct sockaddr));
+    DIE(ret < 0, "bind");
+
+    int n; 
+
+    socklen_t clilen;
+
+    fd_set read_fds;	// reading set used by select()
+    fd_set tmp_fds;		// aux reading set
+    int fdmax;			// max fd from read set
+
+    // clear read and aux file descriptors sets
+    FD_ZERO(&read_fds);
+    FD_ZERO(&tmp_fds);
+
+    // set TCP socket
+    int sockfd_TCP, newsockfd;
+    sockfd_TCP = socket(AF_INET, SOCK_STREAM, 0);
+    DIE(sockfd_TCP < 0, "socket");
+
+    // make link between TCP socket and server
+    ret = bind(sockfd_TCP, (struct sockaddr *) &servaddr, sizeof(struct sockaddr));
+    DIE(ret < 0, "bind");
+
+    // set TCP socket as a listener for upcoming requests
+    ret = listen(sockfd_TCP, MAX_CLIENTS);
+    DIE(ret < 0, "listen");
+
+
+    // add TCP, UDP and STDIN file descriptors to read set
+    FD_SET(sockfd_TCP, &read_fds);
+    FD_SET(sockfd_UDP, &read_fds);
+    FD_SET(STDIN_FILENO, &read_fds);
+    fdmax = sockfd_TCP;
+
+    // declare data structures used by the server
+    client_tcp clients[MAX_CLIENTS];
+    int clients_dim = 0;
+    unordered_map<string, queue<message_udp>> inactive_list;
         
     bool running = true;
     while(running) {
-
-    /************** PROTOCOLUL UDP ************/
-
-        // continue;
-        // printf("-------------------------\n");
-        // print_clients(clients, clients_dim);
-        // printf("-------------------------\n");
-
-        /************** PROTOCOLUL TCP ************/ 
 
         tmp_fds = read_fds; 
 		
@@ -250,90 +225,64 @@ int main(int argc, char *argv[])
 		for (i = 0; i <= fdmax; i++) {
 			if (FD_ISSET(i, &tmp_fds)) {
 				if (i == sockfd_TCP) {
-                    // printf("cazul 1\n");
-					// a venit o cerere de conexiune pe socketul inactiv (cel cu listen) de TCP,
-					// pe care serverul o accepta
+                    // request from a TCP client on the socket listening
 					clilen = sizeof(cliaddr);
+                    // accept connection
 					newsockfd = accept(sockfd_TCP, (struct sockaddr *) &cliaddr, &clilen);
 					DIE(newsockfd < 0, "accept");
 
-					// se adauga noul socket intors de accept() la multimea descriptorilor de citire
+					// add new socket
 					FD_SET(newsockfd, &read_fds);
 					if (newsockfd > fdmax) { 
 						fdmax = newsockfd;
                     }
 
-
+                    // empty buffer
                     memset(buffer, 0, BUFLEN);
                     int m = recv(newsockfd, buffer, sizeof(buffer), 0);
                     DIE(m < 0, "recv");
 
-
+                    // check if the client has a valid id
                     bool valid_new_client = true;
                     for(int j = 0; j < clients_dim; j++) {
                         if(strcmp(clients[j].id, buffer) == 0) {
                             if(clients[j].active) {
                                 printf("Client %s already connected.\n", clients[j].id);
                                 valid_new_client = false;
-
-                                memset(buffer, 0, BUFLEN);
-                                strcpy(buffer, "close");
-                                int res = send(newsockfd, buffer, strlen(buffer) + 1, 0);
-                                DIE(res < 0, "res");
-                                close(newsockfd);
+                                disconnect_client(newsockfd);
                                 FD_CLR(newsockfd, &read_fds);
                             }
                         }
                     }
 
-                    // daca s-a incercat conectarea unui client cu acelasi ID
+                    // invalid connecting request with same id
                     if(!valid_new_client) {
                         continue;
                     }
      
 
-                    // cazul in care se RECONECTEAZA un client
+                    // check if client is reconnecting
                     for(int j = 0; j < clients_dim; j++) {
+                        // the client is reconnecting
                         if(strcmp(clients[j].id, buffer) == 0) {
-                            // printf("Acest client a mai fost conectat inainte\n");
                             valid_new_client = false;
                             clients[j].active = true;
                             printf("New client %s connected from %s : %d\n",
 					        buffer, inet_ntoa(cliaddr.sin_addr), ntohs(cliaddr.sin_port));
-                            
-                            // printf("------------------------------------------------");
-                            // print_inactive_list(inactive_list);
-                            // printf("-----------------------------------------------");
+
+                            // send message received while the client was disconnected
                             if(hasKey(inactive_list, clients[j].id)) {
                                 while(!inactive_list.at(clients[j].id).empty()) {
                                     message_udp curr_msg = inactive_list.at(clients[j].id).front();
-                                    // printf("Voi trimite mesajul:\n");
-                                    // print_udp_msg(curr_msg);
                                     inactive_list.at(clients[j].id).pop();
-
-                                    string tot = curr_msg.ip_udp + ":" + curr_msg.port_udp + " - " + curr_msg.topic + " - "
-                                                + curr_msg.data_type + " - " + curr_msg.payload;
-
-
-
-                                   char dim[10];
-                                    memset(dim, 0, 10);
-                                    sprintf(dim, "%ld", tot.size());
-                                    dim[10] = '\0'; 
-                                    send(clients[j].socket, dim, 10, 0);
-
-                                    char *msg_char = (char *)malloc((tot.size() + 1) * sizeof(char));
-                                    tot.copy(msg_char, tot.size());
-                                    msg_char[tot.size()] ='\0';
-
-                                    send(clients[j].socket, msg_char, tot.size(), 0);
-                                    free(msg_char);
+                                    send_UDP_client(curr_msg, clients[j].socket);
                                 }   
                             }
                             break;
                         }
                     }
 
+                    // new client
                     if(valid_new_client) {
                         client_tcp new_client;
                         strncpy(new_client.id, buffer, strlen(buffer) + 1);
@@ -345,97 +294,47 @@ int main(int argc, char *argv[])
                         printf("New client %s connected from %s : %d\n",
 					        buffer, inet_ntoa(cliaddr.sin_addr), ntohs(cliaddr.sin_port));
 
+                        // deactivate Nagle
                         int yes = 1;
                         int result = setsockopt(new_client.socket,
                                         IPPROTO_TCP,
                                         TCP_NODELAY,
                                         (char *) &yes, 
                                         sizeof(int));    // 1 - on, 0 - off
-                        // printf("Bufferul primit este: %s", buffer);
+                        DIE(result < 0, "Nagle");
                     }
                     					
 				} else if(i == sockfd_UDP) {
-                    // a venit o cerere de conexiune pe socketul inactiv (cel cu listen),
-					// pe care serverul o accepta
-                    
+                    // data on UDP socket
                     memset(buffer, 0, sizeof(buffer));
                     memset(&cliaddr, 0, sizeof(cliaddr));
                     n = recvfrom(sockfd_UDP, (char *)buffer, BUFLEN,  
                                 MSG_WAITALL, ( struct sockaddr *) &cliaddr, 
-                                &len);
+                                &clilen);
                     DIE(n < 0, "recvfrom");
                     
                     message_udp new_msg;
-                    // memset(&new_msg, 0, sizeof(new_msg));
-
                     new_msg.ip_udp = inet_ntoa(cliaddr.sin_addr);
-                    
                     char tmp[6];
-                    // sprintf(new_msg.ip_udp, "%s", inet_ntoa(cliaddr.sin_addr));
                     sprintf(tmp, "%d", ntohs(cliaddr.sin_port));
                     new_msg.port_udp = tmp;
-                    // printf("strlen:%ld\n", strlen(new_msg.port_udp));
-                    // new_msg.port_udp[strlen(new_msg.ip_udp)] = '\0';
-                    // new_msg.port_udp[strlen(new_msg.port_udp)] = '\0';
-    
+
+                    // get input components in different strings and populate
+                    // struct message_udp fields
                     parse_input(buffer, n, &new_msg);
-                    int total_len = new_msg.ip_udp.size() + new_msg.port_udp.size() + new_msg.topic.size()
-                                        + new_msg.data_type.size() + new_msg.payload.size();
-                    // printf("\n++++++++++++++++++++++\n");
-                    // print_udp_msg(new_msg);
-                    // printf("\n++++++++++++++++++++++\n");
-                    
-					// clilen = sizeof(cliaddr);
 
-					// printf("Noua conexiune UDP de la %s, port %d, socket client %d\n",
-					// 		inet_ntoa(cliaddr.sin_addr), ntohs(cliaddr.sin_port), newsockfd);
-
-                    // printf("%s:%d", inet_ntoa(cliaddr.sin_addr), ntohs(cliaddr.sin_port));
-                    
-                    // print_clients(clients, clients_dim);
-
+                    // check clients that are subscribed to the topic received
+                    // from UDP client
                     for(int j = 0; j < clients_dim; j++) {
-                        if(hasKey(clients[j].topics, new_msg.topic)) { // daca e abonat
-                            // print_udp_msg(new_msg);
-
+                        // check if it is subscribed
+                        if(hasKey(clients[j].topics, new_msg.topic)) { 
                             if(clients[j].active) {
-                                char *pointer = (char *)&new_msg;
-                                // printf("**************************\n");
-                                // for(int k = 0; k < 100; k++) {
-                                //     printf("0x%.2x ", pointer[k]);
-                                // }
-                                // printf("***************************\n");
-
-                                string tot = new_msg.ip_udp + ":" + new_msg.port_udp + " - " + new_msg.topic + " - "
-                                            + new_msg.data_type + " - " + new_msg.payload;
-
-
-                                char dim[10];
-                                memset(dim, 0, 10);
-                                // printf("tot size: %ld\n", tot.size());
-                                sprintf(dim, "%ld", tot.size());
-                                // printf("dim = %s\n", dim);
-                                dim[10] = '\0'; 
-                                // printf("sizeof new_msg: %ld\n", sizeof(new_msg));
-                                // printf("strlen struct: %ld\n", sizeof(message_udp));
-                                // printf("len : %d\n", total_len);
-                                send(clients[j].socket, dim, 10, 0);
-
-                                char *msg_char = (char *)malloc((tot.size() + 1) * sizeof(char));
-                                tot.copy(msg_char, tot.size());
-                                msg_char[tot.size()] ='\0';
-
-
-                                // printf("msg char: %s\n", msg_char);
-                                // printf("strlen msg char: %ld\n", strlen(msg_char));
-                                send(clients[j].socket, msg_char, tot.size(), 0);
-                                free(msg_char);
+                                send_UDP_client(new_msg, clients[j].socket);
                             } else {
+                                // enqueue message for inactive clients that
+                                // are subscribed to the topic with sf = 1
                                 if(hasKey(inactive_list, clients[j].id)) {
                                      if(clients[j].topics.at(new_msg.topic) == 1) {
-                                        // printf("------------------------------------------------");
-                                        // print_inactive_list(inactive_list);
-                                        // printf("-----------------------------------------------");
                                          inactive_list.at(clients[j].id).push(new_msg);
                                      }
                                 } else {
@@ -450,23 +349,17 @@ int main(int argc, char *argv[])
                     }
 
                 } else if (i == STDIN_FILENO) {
+                        // input from keyboard
                     	memset(buffer, 0, sizeof(buffer));
 			            n = read(0, buffer, sizeof(buffer));
-                        // printf("n = %d", n);
                         buffer[n - 1] = '\0';
 			            DIE(n < 0, "read"); 
                         if(strcmp(buffer, "exit") == 0) {
-                            // TODO: Inchide toate conexiunile active
-                            printf("Se inchide serverul si toate conexiunile active de TCP\n");
+                            printf("Closing server and all conections with clients...\n");
                             for(int j = 0; j < clients_dim; j++) {
                                 if(clients[j].active) {
-
-                                    memset(buffer, 0, BUFLEN);
-                                    strcpy(buffer, "close");
-                                    int res = send(clients[j].socket, buffer, strlen(buffer), 0);
-                                    DIE(res < 0, "res");
+                                    disconnect_client(clients[j].socket);
                                 }
-                                close(clients[j].socket);
                                 FD_CLR(clients[j].socket, &read_fds);
                             }
                             close(sockfd_TCP);
@@ -476,35 +369,25 @@ int main(int argc, char *argv[])
                             printf("Invalid command. Command help:\n\"exit:\" closes the server and all conections\n");
                         }
                 } else {
-					// s-au primit date pe unul din socketii de client,
-					// asa ca serverul trebuie sa le receptioneze
+					// data on already connected clients socket
 					memset(buffer, 0, BUFLEN);
 					n = recv(i, buffer, sizeof(buffer) - 1, 0);
 					DIE(n < 0, "recv");
 
-
+                    // the client has closed the connection
                     if (n == 0) {
-						// conexiunea s-a inchis
-                        // TODO de adaugat numele id in loc de "i"
-						// printf("Client %d disconnected\n", i);
-						// close(i);
-
                         for(int j = 0; j < clients_dim; j++) {
                             if(clients[j].socket == i) {
                                 printf("Client %s disconnected.\n", clients[j].id);
                                 clients[j].active = false;  
                             }
                         }
-                        
-						// se scoate din multimea de citire socketul inchis 
                         close(i);
 						FD_CLR(i, &read_fds);
                         continue;
 					}
 
-
-                    int no_arg = 0;
-
+                    // subscribe / unsubscribe command
                     char topic_subscribed[MAX_TOPIC];
                     int sf;
                     if(buffer[strlen(buffer) - 1] == 'S') {
@@ -513,37 +396,18 @@ int main(int argc, char *argv[])
                         sf = buffer[strlen(buffer) - 2] == '1' ? 1:0;
 
                         for(int j = 0; j < clients_dim; j++) {
-                            // printf("i = %d, client[%d] = %d", i, j, clients[j].socket);
                             if(i == clients[j].socket) {
-                                // printf("%s Subscribed to %s\n", clients[j].id, topic_subscribed);
-                                // printf("Clientul a fost gasit!\n");
                                 clients[j].topics.insert(make_pair(topic_subscribed, sf));
-                                // send(clients[j].socket, msg, strlen(msg), 0);
-                                // print_clients(clients, clients_dim);
-                                // clients[j].topic[clients[j].no_topics] = (char *)malloc(MAX_TOPIC * sizeof(char));
-                                // strncpy(clients[j].topic[clients[j].no_topics++], topic_subscribed,
-                                //         strlen(topic_subscribed) + 1);
                             }
                         }
                     } else if (buffer[strlen(buffer) - 1] == 'U') {
-                        // printf("------------------------");
-                            strncpy(topic_subscribed, buffer, strlen(buffer) - 2); // aici e topic unsubscribed
-                            // printf("topic_unsubscribed = %s", topic_subscribed);
-                        
-                        if(no_arg == 2) {
+                            strncpy(topic_subscribed, buffer, strlen(buffer) - 2); 
                             for(int j = 0; j < clients_dim; j++) {
                                 if(i == clients[j].socket) {
-                                    // printf("%s unsubscribed from %s\n", clients[j].id, topic_subscribed);
-                                    // printf("topic care va fi erase-uit:%s|\n", topic_subscribed);
                                     clients[j].topics.erase(topic_subscribed);
-                                    // clients[j].topics[topic_subscribed] = sf;
-                                    // print_clients(clients, clients_dim);
-                                    // clients[j].topic[clients[j].no_topics] = (char *)malloc(MAX_TOPIC * sizeof(char));
-                                    // strncpy(clients[j].topic[clients[j].no_topics++], topic_subscribed,
-                                    //         strlen(topic_subscribed) + 1);
+
                                 }
                             }
-                        } 
                     }
 				}
 			}

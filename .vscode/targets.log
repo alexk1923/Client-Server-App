@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue May 10 20:17:41 2022
+# Make data base, printed on Tue May 10 22:33:59 2022
 
 # Variables
 
@@ -53,7 +53,7 @@ VSCODE_CWD = /mnt/c/Users/AlexK/AppData/Local/Programs/Microsoft VS Code
 # default
 MAKE_HOST := x86_64-pc-linux-gnu
 # environment
-PATH = /home/alexkullman/.vscode-server/bin/57fd6d0195bb9b9d1b49f6da5db789060795de47/bin/remote-cli:/home/alexkullman/.nvm/versions/node/v16.5.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/PuTTY/:/mnt/d/Programming/Java Stuff/tools/jdks/jdk-17/bin:/mnt/c/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin:/mnt/c/Program Files (x86)/GnuWin32/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/nodejs/:/mnt/c/Program Files/Git/cmd:/mnt/c/Strawberry/c/bin:/mnt/c/Strawberry/perl/site/bin:/mnt/c/Strawberry/perl/bin:/mnt/c/Users/AlexK/AppData/Roaming/local/bin:/mnt/c/Program Files/MySQL/MySQL Shell 8.0/bin/:/mnt/c/Users/AlexK/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/AlexK/.dotnet/tools:/mnt/d/Programming/Java Stuff/tools/jdks/jdk-17/bin:/mnt/c/Users/AlexK/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2020.3.3/bin:/mnt/c/Users/AlexK/AppData/Local/Programs/MiKTeX/miktex/bin/x64/:/mnt/c/Users/AlexK/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0/LocalCache/local-packages/Python38/Scripts:/mnt/c/Users/AlexK/AppData/Roaming/npm:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Community Edition 2021.2.3/bin:/mnt/d/Programming/Flutter/flutter/bin
+PATH = /home/alexkullman/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/remote-cli:/home/alexkullman/.nvm/versions/node/v16.5.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/PuTTY/:/mnt/d/Programming/Java Stuff/tools/jdks/jdk-17/bin:/mnt/c/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin:/mnt/c/Program Files (x86)/GnuWin32/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/MATLAB/R2021b/runtime/win64:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files/nodejs/:/mnt/c/Program Files/Git/cmd:/mnt/c/Strawberry/c/bin:/mnt/c/Strawberry/perl/site/bin:/mnt/c/Strawberry/perl/bin:/mnt/c/Users/AlexK/AppData/Roaming/local/bin:/mnt/c/Program Files/MySQL/MySQL Shell 8.0/bin/:/mnt/c/Users/AlexK/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/AlexK/.dotnet/tools:/mnt/d/Programming/Java Stuff/tools/jdks/jdk-17/bin:/mnt/c/Users/AlexK/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Educational Edition 2020.3.3/bin:/mnt/c/Users/AlexK/AppData/Local/Programs/MiKTeX/miktex/bin/x64/:/mnt/c/Users/AlexK/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0/LocalCache/local-packages/Python38/Scripts:/mnt/c/Users/AlexK/AppData/Roaming/npm:/mnt/c/Program Files/JetBrains/IntelliJ IDEA Community Edition 2021.2.3/bin:/mnt/d/Programming/Flutter/flutter/bin
 # environment
 LSCOLORS = Gxfxcxdxbxegedabagacad
 # environment
@@ -63,7 +63,7 @@ NVM_BIN = /home/alexkullman/.nvm/versions/node/v16.5.0/bin
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-177c3b91-22f9-49a0-ab4a-858ed940fd74.sock
+VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-72102ba1-d8e6-4f8a-9665-5bc65371c130.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -83,7 +83,7 @@ WSL_INTEROP = /run/WSL/8_interop
 # environment
 PULSE_SERVER = /mnt/wslg/PulseServer
 # environment
-WT_SESSION = b48217b1-8e9e-433a-9f96-5e9c361108de
+WT_SESSION = e004a6c8-5a96-4819-a628-539c64410d55
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
@@ -91,7 +91,7 @@ HOME = /home/alexkullman
 # environment
 LOGNAME = alexkullman
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # environment
 NVM_CD_FLAGS = -q
 # environment
@@ -185,9 +185,9 @@ WSL_DISTRO_NAME = Ubuntu-20.04
 
 # Directories
 
-# . (device 2080, inode 115219): 17 files, no impossibilities.
+# . (device 2080, inode 115219): 16 files, no impossibilities.
 
-# 17 files, no impossibilities in 1 directories.
+# 16 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -232,7 +232,7 @@ Makefile:
 server: server.cpp protocols.cpp
 #  Implicit rule search has not been done.
 #  Implicit/static pattern stem: ''
-#  Last modified 2022-05-10 17:16:15.171641871
+#  File does not exist.
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # automatic
@@ -250,7 +250,7 @@ server: server.cpp protocols.cpp
 # automatic
 # ^ := server.cpp protocols.cpp
 # automatic
-# ? := server.cpp
+# ? := server.cpp protocols.cpp
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=1/12=8%
 #  recipe to execute (from 'Makefile', line 18):
@@ -274,8 +274,8 @@ protocols.cpp:
 # Not a target:
 .DEFAULT:
 #  Implicit rule search has not been done.
- 
 #  Modification time never checked.
+ 
 #  File has not been updated.
 
 run_server: server
@@ -303,7 +303,7 @@ clean:
 # Not a target:
 server.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-10 17:17:25.071641974
+#  Last modified 2022-05-10 22:29:55.20792536
 #  File has been updated.
 #  Successfully updated.
 
@@ -315,12 +315,12 @@ server.cpp:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 26 / storage = 303 B / avg = 11 B
-# current buf: size = 8162 B / used = 303 B / count = 26 / avg = 11 B
+# strcache buffers: 1 (0) / strings = 27 / storage = 310 B / avg = 11 B
+# current buf: size = 8162 B / used = 310 B / count = 27 / avg = 11 B
 
-# strcache performance: lookups = 52 / hit rate = 50%
+# strcache performance: lookups = 51 / hit rate = 47%
 # hash-table stats:
-# Load=26/8192=0%, Rehash=0, Collisions=1/52=2%
-# Finished Make data base on Tue May 10 20:17:41 2022
+# Load=27/8192=0%, Rehash=0, Collisions=1/51=2%
+# Finished Make data base on Tue May 10 22:33:59 2022
 
  
