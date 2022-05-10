@@ -75,7 +75,7 @@ restante si trimise cand clientul reface legatura cu serverul.
 			* daca nu este primit niciun byte, inseamna ca respectivul client s-a
 			  deconectat, caz in care se afiseaza un mesaj corespunzator si este
 			  setat campul clientului de "active" la false
-			* mesajul primit pentru subscribe este de tipul |<S/U><topic><0/1>|
+			* mesajul primit pentru subscribe este de tipul |<topic><S/U><0/1>|
 			  cu semnificatia de subscribe/unsubscribe - topic - sf=0/sf=1
 			* pentru subscribe, se adauga topic-ul cu sf-ul corespondent in map-ul
 		        topics pentru acel client

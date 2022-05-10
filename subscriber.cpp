@@ -129,6 +129,11 @@ int main(int argc, char *argv[])
 					subscription_info[info_len] = 'U';
 					subscription_info[info_len + 1] = '\0';
 
+					token = strtok(NULL, " ");
+					if(token) {
+						printf("Invalid number of arguments for unsubscribe\n");
+						continue;
+					}
 					n = send(sockfd, subscription_info, strlen(subscription_info), 0);
 					DIE(n < 0, "send");
 				} else {

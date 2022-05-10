@@ -10,6 +10,7 @@ using namespace std;
 #define MAX_TOPIC 51
 #define MAX_ID 150
 #define MAX_MSG_LIST 200
+#define MAX_STORED_CLIENTS 1000
 
 #pragma pack(1)
 typedef struct message_udp
@@ -38,5 +39,6 @@ typedef struct client_tcp
 void print_udp_msg(message_udp udp_msg);
 void print_clients(client_tcp clients[], int client_dim);
 void print_inactive_list(unordered_map<string, queue<message_udp>> map);
+
 
 #endif

@@ -23,16 +23,6 @@ void usage(char *file)
 	exit(0);
 }
 
-int countDigits(int x) {
-    int c = 0;
-    int xx = x;
-    while(xx) {
-        xx /= 10;
-        c++;
-    }
-    return c;
-}
-
 
 void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
 {
@@ -67,7 +57,6 @@ void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
             new_msg->data_type = "FLOAT";
 
             int sign_byte = (int)(buffer[++i]); // i = 51
-
             int payload_val = ntohl(*(uint32_t *) (buffer + (++i))); // i = 52
 
             uint8_t pow = (*(uint8_t *) (buffer + (i + 4))); // i = 56
@@ -93,7 +82,7 @@ void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
             char* payload_val = (char *) (buffer + 51);
             new_msg->payload = payload_val;
         } else {
-            printf("\n-----------INVALID !!!!!!!-------\n");
+            printf("\nInvalid data from UDP Client\n");
         }
 }
 
@@ -150,7 +139,6 @@ int main(int argc, char *argv[])
     setvbuf(stdout, NULL, _IONBF, BUFSIZ); 
     char buffer[BUFLEN]; 
     struct sockaddr_in servaddr, cliaddr; 
-
 
     // set port
     int portno = atoi(argv[1]);
@@ -210,7 +198,7 @@ int main(int argc, char *argv[])
     fdmax = sockfd_TCP;
 
     // declare data structures used by the server
-    client_tcp clients[MAX_CLIENTS];
+    client_tcp clients[MAX_STORED_CLIENTS];
     int clients_dim = 0;
     unordered_map<string, queue<message_udp>> inactive_list;
         
@@ -260,7 +248,6 @@ int main(int argc, char *argv[])
                         continue;
                     }
      
-
                     // check if client is reconnecting
                     for(int j = 0; j < clients_dim; j++) {
                         // the client is reconnecting
@@ -397,7 +384,11 @@ int main(int argc, char *argv[])
 
                         for(int j = 0; j < clients_dim; j++) {
                             if(i == clients[j].socket) {
-                                clients[j].topics.insert(make_pair(topic_subscribed, sf));
+                                if(hasKey(clients[j].topics, topic_subscribed)) {
+                                    clients[j].topics.at(topic_subscribed) = sf;
+                                } else {
+                                    clients[j].topics.insert(make_pair(topic_subscribed, sf));
+                                }
                             }
                         }
                     } else if (buffer[strlen(buffer) - 1] == 'U') {
