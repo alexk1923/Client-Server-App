@@ -40,13 +40,13 @@ void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
         while(buffer[i] != '\0' && i < 50) {
             i++;
         }
-
+        new_msg->topic = buffer;
+        // new_msg->topic.copy(buffer, i, 0);
         
-        strncpy(new_msg->topic, buffer, i);
-        (new_msg->topic)[i] = '\0';
+        // strncpy(new_msg->topic, buffer, i);
+        // (new_msg->topic)[i] = '\0';
         // printf("Topic: %s", topic);
         i = 50;
-
 
         // type = buffer[i];
         // printf("type:%d", (int)type);
@@ -56,9 +56,10 @@ void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
 
         if(data_type == 0) {
             // printf("\n---------INT!---------\n");
-
-            strncpy(new_msg->data_type, "INT", 3);
-            new_msg->data_type[3] = '\0';
+            new_msg->data_type = "INT";
+            // string tmp("INT", sizeof("INT"));
+            // strncpy(new_msg->data_type, "INT", 3);
+            // new_msg->data_type[3] = '\0';
             int sign_byte = (int)buffer[++i]; // i = 51
             // printf("Octet de semn %d\n", sign_byte);
 
@@ -66,25 +67,32 @@ void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
             if(sign_byte == 1) {
                 payload_val *= (-1);
             }
-            
-            sprintf(new_msg->payload, "%d", payload_val);
-            new_msg->payload[strlen(new_msg->payload)] = '\0';
+            char temp[50];
+            snprintf(temp, 50, "%d", payload_val);
+            new_msg->payload = temp;
+            new_msg->payload.shrink_to_fit();
+            // new_msg->payload[strlen(new_msg->payload)] = '\0';
             // printf("uint32_t in network: %d\n",  payload_val);
         } else if (data_type == 1) {
-            strncpy(new_msg->data_type, "SHORT_REAL", 10);
-            new_msg->data_type[10] = '\0';
+            new_msg->data_type = "SHORT_REAL";
+            // strncpy(new_msg->data_type, "SHORT_REAL", 10);
+            // new_msg->data_type[10] = '\0';
 
 
             // printf("\n---------SHORT REAL!---------\n");
             float payload_val = ntohs(* (uint16_t *) (buffer + (++i))) / 100.0; // i = 51
+            char temp[100];
+            snprintf(temp, 100, "%.2f", payload_val);
+            // new_msg->payload[strlen(new_msg->payload)] = '\0';
 
-            sprintf(new_msg->payload, "%.2f", payload_val);
-            new_msg->payload[strlen(new_msg->payload)] = '\0';
+            new_msg->payload = temp;
             // printf("Number = %.2f\n", payload_val);
         } else if (data_type == 2) {
             // printf("\n---------FLOAT!---------\n");
-            strncpy(new_msg->data_type, "FLOAT", 5);
-            new_msg->data_type[5] = '\0';
+            // tmp.replace(tmp.begin(), tmp.end(), "FLOAT", sizeof("FLOAT"));
+            new_msg->data_type = "FLOAT";
+            // strncpy(new_msg->data_type, "FLOAT", 5);
+            // new_msg->data_type[5] = '\0';
 
 
 
@@ -112,19 +120,22 @@ void parse_input(char buffer[BUFLEN], int n, message_udp *new_msg)
             // printf("payload float val: %d", (int)payload_float_val);
             // char aux_float[10];
             // sprintf(aux_float, "%d", (int)payload_float_val);
-            sprintf(new_msg->payload, "%1.10g", payload_float_val);
-            new_msg->payload[strlen(new_msg->payload)] = '\0';
+            char temp[100];
+            snprintf(temp, 100, "%1.10g", payload_float_val);
+            // new_msg->payload[strlen(new_msg->payload)] = '\0';
+            new_msg->payload = temp;
             // printf("float_number:%f\n", payload_float_val);
 
         } else if(data_type == 3) {
-
-            strncpy(new_msg->data_type, "STRING", 6);
-            new_msg->data_type[6] = '\0';
+            new_msg->data_type = "STRING";
+            // strncpy(new_msg->data_type, "STRING", 6);
+            // new_msg->data_type[6] = '\0';
             // printf("\n---------STRING!---------\n");
             char* payload_val = (char *) (buffer + 51);
-            strncpy(new_msg->payload, payload_val, strlen(payload_val));
+            new_msg->payload = payload_val;
+            // strncpy(new_msg->payload, payload_val, strlen(payload_val));
             // printf("strlen payload string: %ld", strlen(payload_val));
-            new_msg->payload[strlen(payload_val)] = '\0';
+            // new_msg->payload[strlen(payload_val)] = '\0';
             // printf("payload string:%s\n", payload_val);
         } else {
             printf("\n-----------INVALID !!!!!!!-------\n");
@@ -152,8 +163,7 @@ bool hasKey(unordered_map<string, queue<message_udp>> map, string key) {
 
 int main(int argc, char *argv[]) 
 { 
-
-    
+  
     setvbuf(stdout, NULL, _IONBF, BUFSIZ);
     int sockfd_UDP; 
     char buffer[BUFLEN]; 
@@ -265,9 +275,11 @@ int main(int argc, char *argv[])
                             if(clients[j].active) {
                                 printf("Client %s already connected.\n", clients[j].id);
                                 valid_new_client = false;
+
                                 memset(buffer, 0, BUFLEN);
                                 strcpy(buffer, "close");
-                                int res = send(newsockfd, buffer, strlen(buffer), 0);
+                                int res = send(newsockfd, buffer, strlen(buffer) + 1, 0);
+                                DIE(res < 0, "res");
                                 close(newsockfd);
                                 FD_CLR(newsockfd, &read_fds);
                             }
@@ -298,7 +310,24 @@ int main(int argc, char *argv[])
                                     // printf("Voi trimite mesajul:\n");
                                     // print_udp_msg(curr_msg);
                                     inactive_list.at(clients[j].id).pop();
-                                    send(clients[j].socket, &curr_msg, 1600, 0);
+
+                                    string tot = curr_msg.ip_udp + ":" + curr_msg.port_udp + " - " + curr_msg.topic + " - "
+                                                + curr_msg.data_type + " - " + curr_msg.payload;
+
+
+
+                                   char dim[10];
+                                    memset(dim, 0, 10);
+                                    sprintf(dim, "%ld", tot.size());
+                                    dim[10] = '\0'; 
+                                    send(clients[j].socket, dim, 10, 0);
+
+                                    char *msg_char = (char *)malloc((tot.size() + 1) * sizeof(char));
+                                    tot.copy(msg_char, tot.size());
+                                    msg_char[tot.size()] ='\0';
+
+                                    send(clients[j].socket, msg_char, tot.size(), 0);
+                                    free(msg_char);
                                 }   
                             }
                             break;
@@ -308,7 +337,6 @@ int main(int argc, char *argv[])
                     if(valid_new_client) {
                         client_tcp new_client;
                         strncpy(new_client.id, buffer, strlen(buffer) + 1);
-                        new_client.sf = -1;
                         new_client.socket = newsockfd;
                         new_client.no_topics = 0;
                         new_client.active = true;
@@ -337,21 +365,26 @@ int main(int argc, char *argv[])
                                 &len);
                     DIE(n < 0, "recvfrom");
                     
-                    char topic[51];
-                    char type[2];
-                    char payload[1501];
-                    
                     message_udp new_msg;
-                    memset(&new_msg, 0, sizeof(new_msg));
+                    // memset(&new_msg, 0, sizeof(new_msg));
 
-                    sprintf(new_msg.ip_udp, "%s", inet_ntoa(cliaddr.sin_addr));
-                    sprintf(new_msg.port_udp, "%d", ntohs(cliaddr.sin_port));
+                    new_msg.ip_udp = inet_ntoa(cliaddr.sin_addr);
+                    
+                    char tmp[6];
+                    // sprintf(new_msg.ip_udp, "%s", inet_ntoa(cliaddr.sin_addr));
+                    sprintf(tmp, "%d", ntohs(cliaddr.sin_port));
+                    new_msg.port_udp = tmp;
                     // printf("strlen:%ld\n", strlen(new_msg.port_udp));
-                    new_msg.port_udp[strlen(new_msg.ip_udp)] = '\0';
-                    new_msg.port_udp[strlen(new_msg.port_udp)] = '\0';
-
+                    // new_msg.port_udp[strlen(new_msg.ip_udp)] = '\0';
+                    // new_msg.port_udp[strlen(new_msg.port_udp)] = '\0';
+    
                     parse_input(buffer, n, &new_msg);
-
+                    int total_len = new_msg.ip_udp.size() + new_msg.port_udp.size() + new_msg.topic.size()
+                                        + new_msg.data_type.size() + new_msg.payload.size();
+                    // printf("\n++++++++++++++++++++++\n");
+                    // print_udp_msg(new_msg);
+                    // printf("\n++++++++++++++++++++++\n");
+                    
 					// clilen = sizeof(cliaddr);
 
 					// printf("Noua conexiune UDP de la %s, port %d, socket client %d\n",
@@ -364,10 +397,39 @@ int main(int argc, char *argv[])
                     for(int j = 0; j < clients_dim; j++) {
                         if(hasKey(clients[j].topics, new_msg.topic)) { // daca e abonat
                             // print_udp_msg(new_msg);
-   
-                            
+
                             if(clients[j].active) {
-                                send(clients[j].socket, &new_msg, 1600, 0);
+                                char *pointer = (char *)&new_msg;
+                                // printf("**************************\n");
+                                // for(int k = 0; k < 100; k++) {
+                                //     printf("0x%.2x ", pointer[k]);
+                                // }
+                                // printf("***************************\n");
+
+                                string tot = new_msg.ip_udp + ":" + new_msg.port_udp + " - " + new_msg.topic + " - "
+                                            + new_msg.data_type + " - " + new_msg.payload;
+
+
+                                char dim[10];
+                                memset(dim, 0, 10);
+                                // printf("tot size: %ld\n", tot.size());
+                                sprintf(dim, "%ld", tot.size());
+                                // printf("dim = %s\n", dim);
+                                dim[10] = '\0'; 
+                                // printf("sizeof new_msg: %ld\n", sizeof(new_msg));
+                                // printf("strlen struct: %ld\n", sizeof(message_udp));
+                                // printf("len : %d\n", total_len);
+                                send(clients[j].socket, dim, 10, 0);
+
+                                char *msg_char = (char *)malloc((tot.size() + 1) * sizeof(char));
+                                tot.copy(msg_char, tot.size());
+                                msg_char[tot.size()] ='\0';
+
+
+                                // printf("msg char: %s\n", msg_char);
+                                // printf("strlen msg char: %ld\n", strlen(msg_char));
+                                send(clients[j].socket, msg_char, tot.size(), 0);
+                                free(msg_char);
                             } else {
                                 if(hasKey(inactive_list, clients[j].id)) {
                                      if(clients[j].topics.at(new_msg.topic) == 1) {
@@ -398,6 +460,7 @@ int main(int argc, char *argv[])
                             printf("Se inchide serverul si toate conexiunile active de TCP\n");
                             for(int j = 0; j < clients_dim; j++) {
                                 if(clients[j].active) {
+
                                     memset(buffer, 0, BUFLEN);
                                     strcpy(buffer, "close");
                                     int res = send(clients[j].socket, buffer, strlen(buffer), 0);
@@ -485,16 +548,9 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
-
-
-        // printf("Client : %d\n",  *(int *) (buffer + 51)); 
-        // sendto(sockfd, (const char *)hello, strlen(hello),  
-        //     MSG_CONFIRM, (const struct sockaddr *) &cliaddr, 
-        //         len); 
-        // printf("Hello message sent.\n");  
     }
+
     close(sockfd_TCP);
     close(sockfd_UDP);
-
     return 0; 
 }

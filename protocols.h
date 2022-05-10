@@ -11,15 +11,18 @@ using namespace std;
 #define MAX_ID 150
 #define MAX_MSG_LIST 200
 
+#pragma pack(1)
 typedef struct message_udp
 {
-    char ip_udp[16];
-    char port_udp[6];
-    char topic[MAX_TOPIC];
-    char data_type[11];
-    char payload[1501];
+    int dim;
+    string ip_udp;
+    string port_udp;
+    string topic;
+    string data_type;
+    string payload;
 
 }message_udp;
+#pragma pack(0)
 
 typedef struct client_tcp
 {
@@ -27,7 +30,6 @@ typedef struct client_tcp
     int socket;
     int no_topics;
     unordered_map<string, int> topics;
-    int sf;
     bool active;
 
 }client_tcp;

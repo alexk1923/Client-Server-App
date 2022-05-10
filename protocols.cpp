@@ -4,11 +4,12 @@
 
 void print_udp_msg(message_udp udp_msg) {
     printf("++++++++\n");
-    printf("IP UDP:%s\n", udp_msg.ip_udp);
-    printf("Port UDP:%s\n", udp_msg.port_udp);
-    printf("Topic:%s\n", udp_msg.topic);
-    printf("Type:%s\n", udp_msg.data_type);
-    printf("Payload:%s\n", udp_msg.payload);
+    printf("IP UDP:%s\n + size = %ld\n", udp_msg.ip_udp.c_str(), udp_msg.ip_udp.size());
+    printf("Port UDP:%s\n + size = %ld\n", udp_msg.port_udp.c_str(), udp_msg.port_udp.size());
+    printf("Topic:%s + size = %ld\n", udp_msg.topic.c_str(), udp_msg.topic.size());
+    printf("Type:%s + size = %ld\n", udp_msg.data_type.c_str(), udp_msg.data_type.size());
+    printf("Payload:%s + size = %ld\n", udp_msg.payload.c_str(), udp_msg.payload.size());
+    // printf("Total len: %d\n", udp_msg.total_len);
     printf("++++++++\n");
 }
 

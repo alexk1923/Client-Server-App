@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon May  9 21:58:47 2022
+# Make data base, printed on Tue May 10 20:17:41 2022
 
 # Variables
 
@@ -63,7 +63,7 @@ NVM_BIN = /home/alexkullman/.nvm/versions/node/v16.5.0/bin
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-b55f4ee9-112c-4f2d-9809-d80fc3312e14.sock
+VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-177c3b91-22f9-49a0-ab4a-858ed940fd74.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -83,7 +83,7 @@ WSL_INTEROP = /run/WSL/8_interop
 # environment
 PULSE_SERVER = /mnt/wslg/PulseServer
 # environment
-WT_SESSION = 56c45235-0d26-4ae7-b9d9-181adeb0b6e1
+WT_SESSION = b48217b1-8e9e-433a-9f96-5e9c361108de
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
@@ -177,7 +177,7 @@ VSCODE_EXTHOST_WILL_SEND_SOCKET = true
 # environment
 WSL_DISTRO_NAME = Ubuntu-20.04
 # variable set hash-table stats:
-# Load=83/1024=8%, Rehash=0, Collisions=6/108=6%
+# Load=83/1024=8%, Rehash=0, Collisions=6/112=5%
 
 # Pattern-specific Variable Values
 
@@ -197,9 +197,8 @@ WSL_DISTRO_NAME = Ubuntu-20.04
 
 subscriber: subscriber.cpp protocols.cpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-05-09 21:57:07.711810356
-#  File has been updated.
-#  Successfully updated.
+#  Modification time never checked.
+#  File has not been updated.
 #  recipe to execute (from 'Makefile', line 21):
 	g++ $(CFLAGS) subscriber.cpp protocols.cpp -o subscriber
 
@@ -208,9 +207,17 @@ all: server subscriber
 #  Implicit rule search has been done.
 #  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
 
 .PHONY: clean run_server run_subscriber
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.SUFFIXES:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -224,9 +231,28 @@ Makefile:
 
 server: server.cpp protocols.cpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-05-09 21:57:06.681810358
+#  Implicit/static pattern stem: ''
+#  Last modified 2022-05-10 17:16:15.171641871
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := server
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := server.cpp protocols.cpp
+# automatic
+# | := 
+# automatic
+# < := server.cpp
+# automatic
+# ^ := server.cpp protocols.cpp
+# automatic
+# ? := server.cpp
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
 #  recipe to execute (from 'Makefile', line 18):
 	g++ $(CFLAGS) server.cpp protocols.cpp -o server
 
@@ -241,13 +267,14 @@ run_subscriber: subscriber
 # Not a target:
 protocols.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-09 21:54:19.781810597
+#  Last modified 2022-05-10 13:17:24.921620741
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 .DEFAULT:
 #  Implicit rule search has not been done.
+ 
 #  Modification time never checked.
 #  File has not been updated.
 
@@ -261,10 +288,9 @@ run_server: server
 
 # Not a target:
 subscriber.cpp:
-#  Implicit rule search has been done.
-#  Last modified 2022-05-09 20:59:10.961815341
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 clean:
 #  Phony target (prerequisite of .PHONY).
@@ -274,16 +300,15 @@ clean:
 #  recipe to execute (from 'Makefile', line 34):
 	rm -f server subscriber
 
- 
 # Not a target:
 server.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-09 21:56:50.741810381
+#  Last modified 2022-05-10 17:17:25.071641974
 #  File has been updated.
 #  Successfully updated.
 
 # files hash-table stats:
-# Load=13/1024=1%, Rehash=0, Collisions=0/40=0%
+# Load=13/1024=1%, Rehash=0, Collisions=0/41=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
@@ -293,9 +318,9 @@ server.cpp:
 # strcache buffers: 1 (0) / strings = 26 / storage = 303 B / avg = 11 B
 # current buf: size = 8162 B / used = 303 B / count = 26 / avg = 11 B
 
-# strcache performance: lookups = 51 / hit rate = 49%
+# strcache performance: lookups = 52 / hit rate = 50%
 # hash-table stats:
-# Load=26/8192=0%, Rehash=0, Collisions=1/51=2%
-# Finished Make data base on Mon May  9 21:58:47 2022
+# Load=26/8192=0%, Rehash=0, Collisions=1/52=2%
+# Finished Make data base on Tue May 10 20:17:41 2022
 
  

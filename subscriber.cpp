@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	DIE(n < 0, "send");
 
 
-	
+	int read_size = 10;
 
 	while (1) {
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 								(char *) &yes, 
 								sizeof(int));    // 1 - on, 0 - off
 					n = send(sockfd, subscription_info, strlen(subscription_info), 0);
-					// DIE(n < 0, "send");	
+					DIE(n < 0, "send");	
 
 					printf("Subscribed to topic.\n");
 				}
@@ -133,19 +133,37 @@ int main(int argc, char *argv[])
 
 		} else if(FD_ISSET(sockfd, &read_fds)) {
 			memset(buffer, 0, sizeof(buffer));
-			int m = recv(sockfd, buffer, 1600, 0);
+			int m = recv(sockfd, buffer, read_size, 0);
 			DIE(m < 0, "recv");
-			
+
+
 			if(strcmp(buffer, "close") == 0) {
 				break;
 			}
-			// printf("m = %d\n", m);
+
+			if(read_size == 10) {
+				int next_dim = atoi(buffer);
+				// printf("rd size = 10, buff: %s\n", buffer);
+				// printf("next_dim = %d\n", next_dim);
+				read_size = next_dim;
+				// n = send(sockfd, "OK", strlen("OK"), 0);
+				// DIE(n < 0, "send");	
+				continue;
+			}
+			// printf("buff:\n");
+			// for (int i = 0; i < 60; i++) {
+			// 	printf("%c ", buffer[i]);
+			// }
+			// printf("\n");
+
+			
 			// printf("buff: %s\n", buffer);
 
 			if(m != 0) {
-				message_udp *new_msg = (message_udp *)buffer;
-				// <IP_CLIENT_UDP>:<PORT_CLIENT_UDP> - <TOPIC> - <TIP_DATE> - <VALOARE_MESAJ>
-				printf("%s:%s - %s - %s - %s\n", new_msg->ip_udp, new_msg->port_udp, new_msg->topic, new_msg->data_type, new_msg->payload);
+				// message_udp *new_msg = (message_udp *)buffer; 
+				// printf("m = %d\n", m);   
+				printf("%s\n", buffer);
+				read_size = 10;
 				// print_udp_msg(*new_msg);
 				// printf("%s\n", buffer);
 			}
